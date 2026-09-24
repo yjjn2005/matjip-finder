@@ -49,8 +49,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17p
 .hero h1{margin:0;font-size:28px;font-weight:900;letter-spacing:-.03em}
 .hero p{margin:4px 0 0;color:var(--sub);font-size:15px}
 .stick{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);padding:8px 0 8px}
-.tabbar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--line);padding:4px;border-radius:16px;margin-bottom:8px}
-.tabbar button{border:0;background:transparent;color:var(--sub);padding:11px 0;border-radius:12px;font:700 16px var(--sans);cursor:pointer;display:flex;flex-direction:row;justify-content:center;align-items:center;gap:6px}
+.tabbar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--line);padding:4px;border-radius:16px;margin-bottom:8px}
+.tabbar button{border:0;background:transparent;color:var(--sub);padding:11px 0;border-radius:12px;font:700 15px var(--sans);cursor:pointer;display:flex;flex-direction:row;justify-content:center;align-items:center;gap:6px}
 .tabbar button .i{font-size:18px;line-height:1.1}
 .tabbar button[aria-selected="true"]{background:var(--card);color:var(--acc);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .search{display:flex;gap:8px}
@@ -133,6 +133,7 @@ h2.sec{font-size:20px;font-weight:900;margin:18px 2px 0}
 <div class="wrap">
   <div class="hero"><h1>전국 맛집 기행</h1><p>미쉐린 · 식객 허영만 · 구 지적공사 · 노포 · 골프장 해장</p></div>
   <div class="stick"><div class="tabbar" role="tablist">  <button role="tab" data-t="all"><span class="i">🔍</span>탐색</button>
+  <button role="tab" data-t="region"><span class="i">📍</span>지역</button>
   <button role="tab" data-t="theme"><span class="i">🏅</span>테마</button>
   <button role="tab" data-t="mine"><span class="i">📒</span>내 노트</button>
 </div><div id="stick"></div></div>
@@ -245,6 +246,23 @@ const GOLF = [
 ["민지뼈다귀해장국","경기","여주","해장국·감자탕","골프",1,"족도리탕, 뼈해장국","감자탕에 족발을 넣은 족도리탕","여주"],
 ["여명국밥","경기","포천 영중면 금화봉길 651-7","소머리국밥","골프",2,"소머리국밥·솥밥","골프장 옆, 새벽부터 영업","포천"]
 ];
+
+// 서울 강남구·송파구·강동구 (웹 자료 정리, 방문 전 영업 확인)
+const DIST = [
+["진미평양냉면","서울","강남구 학동로 305-3 (논현동)","냉면","",2,"물냉면·만두국","강남 평양냉면으로 꼽히는 집 (후기 기준)"],
+["남포면옥 강남점","서울","강남구 논현동 (학동역)","냉면","",2,"평양냉면","학동역 근처 평양냉면집 (명단 기준)"],
+["능라도 강남점","서울","강남구 역삼동","냉면","",2,"평양냉면","언주역 근처 (명단 기준)"],
+["가나돈까스의집","서울","강남구 언주로 608 (논현동)","돈까스","",2,"돈까스","기사식당 스타일, 주차 편하고 두툼한 고기 (후기 기준)"],
+["외고집설렁탕","서울","강남구 삼성동","설렁탕","",2,"설렁탕","깔끔한 국물, 대로변에 발렛 가능 (후기 기준)"],
+["문배동 육칼","서울","강남구 삼성동","육개장칼국수","",1,"육개장 칼국수 8,000원","육개장에 칼국수와 밥을 함께 (식신 소개)"],
+["삼도갈비 석촌호수점","서울","송파구 송파동","갈비","",3,"갈비·냉면","석촌호수 근처 (명단 기준)"],
+["오발탄","서울","송파구 방이동","곱창·양","",3,"특양·대창구이","한우 곱창, 늦은 시간엔 소진될 수 있음 (식신 소개)"],
+["우불식당","서울","송파구 송파대로28길 27 (가락동)","쭈꾸미","",2,"쭈꾸미","가락시장역 앞, 주차장 있음 (후기 기준)"],
+["가락시장 수산시장","서울","송파구 가락동","횟집·시장","",3,"횟감·대방어","횟집이 모인 대형 시장, 포장 이용이 많음 (후기 기준)"],
+["천호동 냉면·주꾸미 골목","서울","강동구 천호동","냉면·주꾸미","",2,"냉면, 주꾸미","서울시 미디어허브가 소개한 냉면·주꾸미 맛집 골목"],
+["이한진 숙성회","서울","강동구 구천면로 247-1","횟집","",3,"광어 숙성회(小) 35,000원","천호시장 근처, 광어 숙성회 단일 메뉴 (후기 기준)"]
+];
+const DISTRICTS = ["강남구","송파구","강동구"];
 const PRICE = {1:"1단계 · 1만원 이하",2:"2단계 · 1~2만원",3:"3단계 · 2~5만원",4:"4단계 · 5~10만원",5:"5단계 · 10만원 초과"};
 const TAGLABEL = {"미쉐린":"미쉐린 빕구르망 등재","식객":"백반기행 소개","LX":"구 지적공사 사보 수록","노포":"노포","골프":"골프 후 해장"};
 const SRC = {"미쉐린":"미쉐린 가이드 서울·부산 빕구르망","식객":"허영만 백반기행","LX":"구 대한지적공사 사보 「땅 이야기 맛 이야기」(2014년 기사 기준)","노포":"노포 (공개 자료 정리)","골프":"골프장 인근 후기·맛집 목록 정리"};
@@ -257,11 +275,11 @@ const THEMES = {
 const ZONES = {"수도권":["서울","경기","인천"],"강원":["강원"],"충청":["대전","충남","충북"],"전라":["전북","전남","광주"],"경상":["부산","대구","경북","경남"],"제주":["제주"]};
 const ALIAS = {"미슐랭":["미쉐린"],"허영만":["식객","백반기행"],"백반기행":["식객","백반기행"],"지적공사":["LX","지적공사"],"순대":["순대","순댓국"],"해장":["해장","순댓국","소머리","국밥"],"골프":["골프"],"골프장":["골프"]};
 const STOP = ["맛집","식당","음식점","추천","근처"];
-const LG_MAP = {"소바":"일식","히츠마부시":"일식","중식":"중식","양식·바비큐":"양식","빵":"카페·디저트"};
+const LG_MAP = {"돈까스":"양식","소바":"일식","히츠마부시":"일식","중식":"중식","양식·바비큐":"양식","빵":"카페·디저트"};
 const lg = r => LG_MAP[r[3]] || "한식";
 const key = r => r[0]+"|"+r[2];
 const GMAP = new Map(GOLF.map(r=>[key(r),r]));
-const MERGED = [...ALL.map(r=>GMAP.get(key(r))||r), ...GOLF.filter(g=>!ALL.some(a=>key(a)===key(g)))];
+const MERGED = [...ALL.map(r=>GMAP.get(key(r))||r), ...GOLF.filter(g=>!ALL.some(a=>key(a)===key(g))), ...DIST];
 const tagsOf = r => r[4]?r[4].split(",").filter(Boolean):[];
 const srcText = r => { const t=tagsOf(r); return t.length? t.map(x=>SRC[x]).join(" · ") : "웹 자료 정리 (포털·매거진)"; };
 const score = r => { const t=tagsOf(r); return (t.includes("미쉐린")?4:0)+(t.includes("식객")?3:0)+(t.includes("LX")?2:0)+(t.includes("노포")?1:0); };
@@ -278,7 +296,7 @@ function tokMatch(r,t){
   return (ALIAS[t]||[t]).some(a=>h.includes(a));
 }
 
-const st = {tab:"all", sub:"all", q:"", zone:"전체", lg:"전체", cat:"전체", price:0, tags:[], sort:"추천순", open:false, theme:"미쉐린", gregion:"전체"};
+const st = {tab:"all", sub:"all", q:"", zone:"전체", lg:"전체", cat:"전체", price:0, tags:[], sort:"추천순", open:false, theme:"미쉐린", gregion:"전체", dist:"전체"};
 const mem = (()=>{ let d={};
   try{ d = JSON.parse(localStorage.getItem("matjip-v2")||localStorage.getItem("matjip-v1")||"{}"); }catch(e){}
   return d; })();
@@ -327,13 +345,14 @@ function segEl(items,isOn,onSel,cls){
   return d;
 }
 function panelCount(){ return (st.cat!=="전체"?1:0)+(st.price?1:0)+st.tags.length+(st.sort!=="추천순"?1:0); }
-function resetAll(){ st.q=""; st.zone="전체"; st.lg="전체"; st.cat="전체"; st.price=0; st.tags=[]; st.sort="추천순"; st.gregion="전체"; }
+function resetAll(){ st.q=""; st.zone="전체"; st.lg="전체"; st.cat="전체"; st.price=0; st.tags=[]; st.sort="추천순"; st.gregion="전체"; st.dist="전체"; }
 
 function render(){
   document.querySelectorAll(".tabbar button").forEach(b=>b.setAttribute("aria-selected", String(b.dataset.t===st.tab)));
   const stick=$("stick"), view=$("view"); stick.innerHTML=""; view.innerHTML=""; SUB().innerHTML="";
   listBox=null;
   if(st.tab==="all") return viewAll(stick,view);
+  if(st.tab==="region") return viewRegion(stick,view);
   if(st.tab==="theme") return viewTheme(stick,view);
   return viewMine(stick,view);
 }
@@ -401,6 +420,14 @@ function viewAll(stick,view){
   prepList(view,{pool:MERGED,
     pred:r=>(st.zone==="전체"||ZONES[st.zone].includes(r[1]))&&(st.lg==="전체"||lg(r)===st.lg)&&(st.cat==="전체"||r[3]===st.cat)&&(!st.price||r[5]===st.price)&&(!st.tags.length||st.tags.every(t=>tagsOf(r).includes(t))),
     parts:()=>[st.zone!=="전체"?st.zone:null,st.lg!=="전체"?st.lg:null,st.cat!=="전체"?st.cat:null,st.price?PRICE[st.price].split(" · ")[0]:null,...st.tags.map(t=>THEMES[t].n)].filter(Boolean)});
+}
+
+function viewRegion(stick,view){
+  searchBox(stick,false);
+  SUB().appendChild(segEl(["전체",...DISTRICTS].map(d=>[d,d==="전체"?"3구 전체":d]), v=>st.dist===v, v=>{st.dist=v;render();}));
+  const d=document.createElement("p"); d.className="desc"; d.textContent="서울 강남구·송파구·강동구 식당입니다. 정확한 주소와 영업 여부는 지도로 확인하세요."; view.appendChild(d);
+  const P=MERGED.filter(r=>DISTRICTS.some(x=>r[2].startsWith(x)));
+  prepList(view,{pool:P, pred:r=>st.dist==="전체"||r[2].startsWith(st.dist), parts:()=>st.dist!=="전체"?[st.dist]:[]});
 }
 
 function viewTheme(stick,view){
