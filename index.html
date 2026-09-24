@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전국 맛집 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  --bg:#F4F6F5; --card:#FFFFFF; --ink:#14201E; --sub:#465552; --line:#E2E8E5;
+  --acc:#0B7A69; --acc-soft:#DDF1EC; --acc-ink:#fff;
+  --michelin:#C2261B; --michelin-bg:#FCE7E5;
+  --nopo:#8A5A12; --nopo-bg:#F8ECD6;
+  --sikgaek:#1F5C99; --sikgaek-bg:#E1EEFA;
+  --lx:#6A3FA6; --lx-bg:#EEE5F8;
+  --golf:#3B6E17; --golf-bg:#E6F1D9;
+  --kakao:#FEE500; --kakao-ink:#191600;
+  --sans:'Noto Sans KR',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1615; --card:#182220; --ink:#EAF1EE; --sub:#B9C8C4; --line:#26332F;
+    --acc:#4FC1AC; --acc-soft:#1B3B35; --acc-ink:#07130F;
+    --michelin:#FF8A80; --michelin-bg:#3B1B18;
+    --nopo:#E7B76A; --nopo-bg:#3A2B12;
+    --sikgaek:#86BDF0; --sikgaek-bg:#152B40;
+    --lx:#BFA2EA; --lx-bg:#2B1D40;
+    --golf:#A6D67A; --golf-bg:#1F3010;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1615; --card:#182220; --ink:#EAF1EE; --sub:#B9C8C4; --line:#26332F;
+  --acc:#4FC1AC; --acc-soft:#1B3B35; --acc-ink:#07130F;
+  --michelin:#FF8A80; --michelin-bg:#3B1B18;
+  --nopo:#E7B76A; --nopo-bg:#3A2B12;
+  --sikgaek:#86BDF0; --sikgaek-bg:#152B40;
+  --lx:#BFA2EA; --lx-bg:#2B1D40;
+  --golf:#A6D67A; --golf-bg:#1F3010;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 130px)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:680px;margin:0 auto;padding:0 14px}
+.hero{padding:18px 0 6px}
+.hero h1{margin:0;font-size:28px;font-weight:900;letter-spacing:-.03em}
+.hero p{margin:4px 0 0;color:var(--sub);font-size:15px}
+.stick{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);padding:8px 0 8px}
+.tabbar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--line);padding:4px;border-radius:16px;margin-bottom:8px}
+.tabbar button{border:0;background:transparent;color:var(--sub);padding:11px 0;border-radius:12px;font:700 16px var(--sans);cursor:pointer;display:flex;flex-direction:row;justify-content:center;align-items:center;gap:6px}
+.tabbar button .i{font-size:18px;line-height:1.1}
+.tabbar button[aria-selected="true"]{background:var(--card);color:var(--acc);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.search{display:flex;gap:8px}
+input[type=search]{flex:1;min-width:0;padding:15px 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:17px var(--sans)}
+.btn{padding:0 18px;min-height:52px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:700 16px var(--sans);cursor:pointer;white-space:nowrap}
+.btn[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.row{display:flex;gap:8px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}
+.row::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:11px 18px;min-height:44px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 16px var(--sans);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 14px 12px;margin-top:8px}
+.lbl{font-size:15px;font-weight:700;color:var(--sub);margin-top:14px}
+.count{color:var(--sub);font-size:16px;font-weight:600;padding:6px 2px 0}
+.list{display:grid;gap:14px;padding-top:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px 18px}
+.top{display:flex;justify-content:space-between;gap:10px}
+.name{margin:0;font-size:22px;font-weight:900;letter-spacing:-.02em;line-height:1.3}
+.meta{margin-top:4px;color:var(--sub);font-size:15.5px}
+.tier{flex:none;align-self:flex-start;font-size:14px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc-soft);color:var(--acc)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-size:14px;font-weight:700;padding:4px 12px;border-radius:999px}
+.t-미쉐린{background:var(--michelin-bg);color:var(--michelin)}
+.t-노포{background:var(--nopo-bg);color:var(--nopo)}
+.t-식객{background:var(--sikgaek-bg);color:var(--sikgaek)}
+.t-LX{background:var(--lx-bg);color:var(--lx)}
+.t-골프{background:var(--golf-bg);color:var(--golf)}
+.menu{margin:14px 0 0;font-size:19px;line-height:1.45}
+.menu b{font-weight:700}
+.menu span{color:var(--sub);font-size:16px;display:block}
+.note{margin:6px 0 0;color:var(--sub);font-size:16px}
+.go{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.go a,.go button{display:flex;align-items:center;justify-content:center;min-height:52px;text-align:center;padding:10px 4px;border-radius:14px;border:0;font:700 16px var(--sans);text-decoration:none;cursor:pointer}
+.go .n{background:var(--acc);color:var(--acc-ink)}
+.go .g{background:var(--acc-soft);color:var(--acc)}
+.go .t{background:var(--card);color:var(--ink);border:1px solid var(--line)!important}
+.go .k{background:var(--kakao);color:var(--kakao-ink)}
+.mine{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.acts{display:flex;gap:8px;align-items:center}
+.act{padding:10px 18px;min-height:46px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);font:700 16px var(--sans);cursor:pointer}
+.act[aria-pressed="true"]{background:var(--acc-soft);border-color:var(--acc);color:var(--acc)}
+.stars{margin-left:auto;white-space:nowrap}
+.stars button{background:none;border:0;font-size:30px;line-height:1;padding:4px 2px;color:var(--line);cursor:pointer}
+.stars button.on{color:#E5A400}
+details summary{cursor:pointer;color:var(--acc);font-size:16px;font-weight:700;margin-top:14px;padding:6px 0}
+.cm{display:flex;gap:8px;margin-top:8px}
+.cm input{flex:1;min-width:0;padding:13px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:17px var(--sans)}
+.cm button{padding:0 18px;min-height:48px;border-radius:12px;border:0;background:var(--acc);color:var(--acc-ink);font:700 16px var(--sans)}
+.cl{list-style:none;margin:8px 0 0;padding:0;font-size:16px}
+.cl li{padding:7px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+.cl button{background:none;border:0;color:var(--sub);cursor:pointer}
+.empty{text-align:center;color:var(--sub);padding:44px 10px;line-height:1.8}
+.seg.two{grid-template-columns:1fr 1fr}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--line);padding:4px;border-radius:14px;margin-top:8px}
+.seg button{border:0;background:transparent;color:var(--sub);padding:13px 2px;border-radius:11px;font:700 16px var(--sans);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.desc{margin:12px 2px 0;color:var(--sub);font-size:16px}
+h2.sec{font-size:20px;font-weight:900;margin:18px 2px 0}
+.sendbar{display:flex;gap:8px;margin-top:10px}
+.sendbar button{flex:1;min-height:54px;padding:12px;border-radius:14px;border:0;background:var(--kakao);color:var(--kakao-ink);font:700 17px var(--sans);cursor:pointer}
+.info{padding:8px 0 20px;color:var(--sub);font-size:15px}
+.info summary{color:var(--sub);margin:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(28px + env(safe-area-inset-bottom,0px));background:#1B2624;color:#fff;padding:14px 20px;border-radius:14px;font-size:16px;width:max-content;max-width:90vw;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:680px;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.sheet textarea{width:100%;height:170px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:14px var(--sans);padding:10px}
+.sheet .close{margin-top:8px;width:100%;padding:12px;border-radius:12px;border:0;background:var(--acc);color:var(--acc-ink);font:700 15px var(--sans)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.seg.two{grid-template-columns:1fr 1fr}
+.src{margin:12px 0 0;font-size:15px;color:var(--sub);border-left:3px solid var(--acc);padding-left:10px}
+.src b{color:var(--ink);margin-right:6px}
+.count{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.link{background:none;border:0;color:var(--acc);font:700 16px var(--sans);padding:8px 4px;cursor:pointer;flex:none}
+.seg button[aria-pressed]{}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero"><h1>전국 맛집 노트</h1><p>미쉐린 · 식객 허영만 · 구 지적공사 · 노포 · 골프장 해장</p></div>
+  <div class="stick"><div class="tabbar" role="tablist">  <button role="tab" data-t="all"><span class="i">🔍</span>탐색</button>
+  <button role="tab" data-t="theme"><span class="i">🏅</span>테마</button>
+  <button role="tab" data-t="mine"><span class="i">📒</span>내 노트</button>
+</div><div id="stick"></div></div>
+  <div id="sub"></div>
+  <div id="view"></div>
+  <div class="info">
+    <details><summary>출처와 안내</summary>
+    <p>공개 자료를 정리한 개인용 목록이며 미쉐린 가이드, TV조선, 한국국토정보공사(LX)와 제휴 관계가 없습니다.</p>
+    <p>미쉐린: 빕구르망 등재 사실을 글로 표기했습니다. 식객: 허영만 백반기행·책 소개 이력입니다. 구 지적공사: 「땅 이야기 맛 이야기」 수록 향토 맛집으로 2014년 기사 기준이라 폐업·이전·가격 변동이 있을 수 있습니다.</p>
+    <p>가격은 1인 기준 대략치입니다. 방문 전 지도에서 영업 여부를 확인하세요. 별점·찜·댓글은 이 기기에만 저장됩니다.</p></details>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<div class="modal" id="modal"><div class="sheet"><b>아래 내용을 길게 눌러 복사한 뒤 붙여넣으세요</b><textarea id="mtext" readonly></textarea><button class="close" id="mclose">닫기</button></div></div>
+<script>
+// [이름, 시도, 지역, 세부종류, 테마(콤마), 가격단계(1~5), 대표메뉴, 메모]
+const ALL = [
+["하동관","서울","중구 명동","국밥·곰탕","미쉐린,노포",2,"곰탕","1939년 창업 곰탕 노포"],
+["명동교자","서울","중구 명동","국수·만두","미쉐린,노포",2,"칼국수·만두","명동식 칼국수의 뿌리로 알려진 곳"],
+["우래옥","서울","중구 필동","냉면","미쉐린,노포",2,"평양냉면","1946년부터 이어온 냉면 노포"],
+["을밀대","서울","마포구","냉면","미쉐린,노포",2,"평양냉면",""],
+["필동면옥","서울","중구 필동","냉면","미쉐린",2,"평양냉면·만두",""],
+["평래옥","서울","중구 저동","냉면","노포",2,"냉면","오래된 냉면 노포"],
+["이문설농탕","서울","종로구","국밥·곰탕","미쉐린,노포",2,"설렁탕","1904년 개업으로 알려진 설렁탕집"],
+["청진옥","서울","종로구 청진동","해장국","노포",2,"양선지해장국","청진동 해장국 골목의 대표 노포"],
+["한일관","서울","종로구","불고기·갈비탕","노포",3,"불고기·갈비탕","1939년 창업 한식 노포"],
+["토속촌삼계탕","서울","종로구 체부동","삼계탕","미쉐린",3,"삼계탕","경복궁 근처"],
+["3대삼계장인","서울","서초구","삼계탕","미쉐린",3,"삼계탕","2026 빕구르망 신규. 쑥·잣·녹두 페이스트를 얹은 삼계탕"],
+["고사리익스프레스","서울","중구 신당","비건·면","미쉐린",2,"고사리 오일 비빔면","2026 빕구르망 신규. 신당중앙시장"],
+["소바키리 스즈","서울","중구","소바","미쉐린",3,"메밀소바","2026 빕구르망 신규. 한국산 메밀을 일본 전통 방식으로 제면"],
+["안덕","서울","종로구 서촌","냉국수·만두","미쉐린",2,"소고기 냉국수·만둣국","2026 빕구르망 신규"],
+["오일제","서울","용산구","한식","미쉐린",2,"들깨 미역국","2026 빕구르망 신규. 가마솥밥과 단일 메뉴"],
+["승우네식당","서울","종로구 광장시장","백반","식객,노포",1,"뚝배기밥 백반","광장시장 상인 배달 백반집으로 시작. 백반기행 방영"],
+["광장시장 육회자매집","서울","종로구 광장시장","육회","노포",3,"육회","광장시장 대표 육회 골목"],
+["팔당초계국수","경기","남양주 조안면","국수","노포",1,"초계국수","팔당 드라이브 코스 (영업 여부 확인 권장)"],
+["화춘옥","경기","수원","해장국·갈비탕","노포",2,"해장국","수원 노포"],
+["홍원막국수","경기","여주 천서리","막국수","노포",1,"막국수","천서리 막국수 골목, 3대 90년 넘는 역사"],
+["고기리막국수","경기","용인 수지","막국수","",1,"들기름 막국수","전국구로 줄 서는 막국수집"],
+["제일식당","경기","용인 처인구 백암","순댓국","노포",1,"백암순대국","1960년대 개점, 백암순대의 대표격"],
+["장안면옥","경기","안성","냉면","노포",1,"냉면","3대째 이어온 냉면집"],
+["샘밭막국수","강원","춘천 신북","막국수","노포",1,"막국수","춘천 대표 막국수"],
+["통나무집닭갈비","강원","춘천","닭갈비","노포",2,"닭갈비","춘천 닭갈비 노포"],
+["동화가든","강원","강릉","순두부","노포",1,"짬뽕순두부","초당순두부 노포"],
+["울릉도호박집","강원","삼척","백반·생선찜","식객",2,"생선찜·백반","곤드레, 가자미식해 등 강원 반찬"],
+["사돈집","강원","속초 영랑해안1길 8","물곰탕","",2,"물곰탕","해장으로 유명. 오후 3시까지 영업"],
+["대관령 뚝배기","강원","평창 횡계2길 7-8","오삼불고기·순댓국","",2,"오삼불고기, 순댓국, 소머리국밥","혼자 운영하는 어르신 식당"],
+["성심당","대전","중구","빵","노포",1,"튀김소보로","대전 대표 빵집"],
+["오씨칼국수","대전","중구","칼국수","노포",1,"칼국수","대전 칼국수 노포"],
+["연산시장도토리묵","충남","논산 연산4길 10-5","묵요리","식객",1,"도토리묵정식 15,000원","3대째. 정식은 12~2시만 판매"],
+["병천 아우내순대","충남","천안 병천","순대","노포",1,"병천순대","병천 순대거리"],
+["동막골","전북","남원 요천로 1537","돼지갈비","식객",2,"연탄돼지갈비 14,000원","냄비밥과 함께. 백반기행 방영"],
+["베테랑 칼국수","전북","전주","칼국수","노포",1,"칼국수","전주 노포"],
+["삼백집","전북","전주","콩나물국밥","노포",1,"콩나물국밥","전주 콩나물국밥 노포"],
+["하얀집","전남","나주","곰탕","노포",1,"나주곰탕","나주곰탕 원조 노포"],
+["독천식당","전남","목포","낙지갈비탕","노포",2,"낙지갈비탕","목포 노포"],
+["감골식당 성서 본점","대구","달서구 이곡서로 37-1","백반","식객",1,"감골정식 14,000원","딩기장(보리속겨 장)이 별미. 브레이크타임 15~17시"],
+["국일따로국밥","대구","중구","국밥","식객,노포",1,"따로국밥","시원한 대구식. 백반기행 100회 소개"],
+["미성당","대구","중구","납작만두","노포",1,"납작만두","대구 명물 납작만두"],
+["해목","부산","","히츠마부시","미쉐린",3,"장어덮밥(히츠마부시)","나고야식 장어덮밥"],
+["뫼밀집","부산","해운대구 마린시티3로 23","메밀","미쉐린",2,"들기름 메밀·물 메밀","2026 빕구르망 신규. 국산 100% 메밀 직접 제면"],
+["송헌집","부산","수영구","떡갈비","미쉐린",3,"숯불 떡갈비 정식","2026 빕구르망 신규. 구옥 개조"],
+["평양집","부산","북구","이북식 만두","미쉐린",2,"만둣국·녹두전","2026 빕구르망 신규"],
+["본전돼지국밥","부산","서면","돼지국밥","노포",1,"돼지국밥","부산 돼지국밥 대표"],
+["개금밀면","부산","부산진구","밀면","노포",1,"밀면","부산 밀면 노포"],
+["황남빵","경북","경주","빵","노포",1,"황남빵","경주 대표 노포 빵집"],
+["우진해장국","제주","제주시","해장국","노포",1,"고사리육개장","제주 해장국 노포"],
+["자매국수","제주","제주시","고기국수","노포",1,"고기국수","제주 대표 국수집"],
+// 구 대한지적공사(LX) 사보 수록 (2014년 기사 기준 정보)
+["천상애장어家","서울","송파구 중대로 148","장어","LX",3,"장어소금구이","소금구이만 고집. 24시간 영업 (2014 기준)"],
+["가온","서울","광진구 아차산로78길 75","국수·만두","LX",1,"곰국시 8,500원","한우 곰국과 손만두 (2014 기준)"],
+["굴국밥낙지촌","서울","동대문구 고산자로 420","굴밥","LX",1,"뚝배기굴밥 6,500원","경동시장 근처 (2014 기준)"],
+["맛있어꼭!오리","서울","광진구 자양로 187-1","오리구이","LX",3,"숯불 오리구이","조미료 없이 천일염으로 (2014 기준)"],
+["구진포민물장어","인천","남동구 구월남로 117","장어·떡갈비","LX",2,"장어구이 2만원, 떡갈비 9천원","불판 구이 (2014 기준)"],
+["공화춘","인천","중구 차이나타운로 43","중식","LX",1,"특제 짜장면 1만원","두부 튀김과 전복을 올린 짜장면 (2014 기준)"],
+["숯고개부대찌개","경기","평택 쇼핑로 39-1","부대찌개","LX",1,"부대찌개 8,000원","송탄식, 당면 없음 (2014 기준)"],
+["유니스의 정원","경기","안산 상록구 반월천북길 139","양식·바비큐","LX",3,"모둠바비큐세트","반월저수지 옆 레스토랑 (2014 기준)"],
+["대자연호남식당","경기","이천 모가면 진상미로 1585","한정식","LX",2,"돼지불구이정식 11,000원","전라도식 반찬, 홍어삼합 (2014 기준)"],
+["평양초계탕·막국수","경기","오산 큰말길 15-54","초계탕","LX",2,"초계탕(2인) 24,000원","메밀전·닭무침 (2014 기준)"],
+["부안막국수","강원","춘천 후석로344번길 8","막국수","LX",1,"막국수 6,000원","메밀총떡 곁들임 (2014 기준)"],
+["우성닭갈비","강원","춘천 후만로 81","닭갈비","LX",1,"닭갈비 1만원","30년 한자리, 국내산 닭다리살 (2014 기준)"],
+["솔잎가든","강원","영월 청령포로 48","곤드레밥","LX",2,"곤드레돌솥밥 12,000원","생곤드레 사용 (2014 기준)"],
+["비선횟집","강원","강릉 창해로14번길 34","회","LX",4,"자연산 제철회 7~10만원","바다 전망 테라스 (2014 기준)"],
+["바닷가횟집","충남","보령 해안로 417","해산물","LX",3,"간재미무침·도다리쑥맑은탕","현지인이 많이 찾는 집 (2014 기준)"],
+["옛정","대전","유성구 대덕대로 1024","묵요리","LX",1,"도토리묵밥 6,000원","3대째 (2014 기준)"],
+["선광집","충북","옥천 청산면 지전2길 14","생선국수","LX",1,"생선국수, 도리뱅뱅이","정지용 생가 근처 (2014 기준)"],
+["고향식당","충북","청주 미원면 미원시내2길 11-6","올갱이국","LX",1,"올갱이해장국 7,000원","동네 주민이 직접 손질 (2014 기준)"],
+["왱이집","전북","전주 경원동 동문길 88","콩나물국밥","LX",1,"콩나물국밥 6,000원","남부시장식, 수란과 함께 (2014 기준)"],
+["반디어촌","전북","무주 무주읍 장터로 2","어죽","LX",1,"어죽 6,000원","금강 민물고기 어죽 (2014 기준)"],
+["하당먹거리","전남","목포 장미로 95","낙지","LX",3,"낙지탕탕이","한우 육회와 함께 (2014 기준)"],
+["송정떡갈비","광주","광산구 광산로29번길 1","떡갈비","LX",2,"떡갈비 11,000원","한우·돼지 1:1 (2014 기준)"],
+["연화장식당","경남","하동 화개면 화개로 82","재첩·참게탕","LX",1,"재첩정식 8,000원","섬진강 재첩과 참게 (2014 기준)"],
+["수민이네","부산","해운대구 청사포로58번길 118","조개구이","LX",3,"조개구이 3~4만원","연탄불 조개구이 (2014 기준)"],
+["칠성식당","부산","남구 지게골로 7","곱창·막창","LX",2,"곱창(3인) 21,000원","영화 「친구」 촬영지 (2014 기준)"],
+["대동강","대구","남구 대봉로 57-1","이북음식","LX",1,"냉면 7,000원, 불고기","실향민 손맛 (2014 기준)"],
+["홍성방","제주","서귀포 대정읍 하모항구로 76","중식","LX",1,"빨간 해물짬뽕 8,000원","꽃게가 통째로 올라간 짬뽕 (2014 기준)"],
+["한라성식당","제주","서귀포 돈내코로 95","꿩요리","LX",3,"꿩·토종닭 샤브샤브","돈내코 계곡 (2014 기준)"],
+["고니식당","제주","제주시 신대로 119","동태탕","LX",1,"동태찌개 7,000원","파김치가 별미 (2014 기준)"],
+["돌하르방식당","제주","제주시 신산로11길 53","제주 향토음식","LX",1,"각재기국 7,000원","10~15시만 영업했음 (2014 기준)"]
+];
+// 골프장 근처 [이름, 시도, 지역, 세부종류, 테마, 가격단계, 대표메뉴, 메모, 골프 방면]
+const GOLF = [
+["원조 최미자 소머리국밥","경기","광주 곤지암읍 도척로 58","소머리국밥","골프",1,"소머리국밥","곤지암 소머리국밥 원조로 불리는 할머니집","곤지암"],
+["골목집소머리국밥","경기","광주 곤지암읍","소머리국밥","골프,노포",1,"소머리국밥","곤지암 소머리국밥의 원조격으로 꼽히는 곳","곤지암"],
+["사랑방소머리국밥","경기","광주 곤지암읍 경충대로 625","소머리국밥","골프",1,"소머리국밥","곤지암 소머리국밥 거리","곤지암"],
+["전가네 해장국","경기","광주 곤지암읍 광여로 43","해장국","골프",1,"선지해장국","해장국 단일 메뉴. 우거지·콩나물·내장고기","곤지암"],
+["제일식당","경기","용인 처인구 백암","순댓국","골프,노포",1,"백암순대국","머릿고기와 오소리감투가 큼직하게 들어감. 발렛 가능","용인·백암"],
+["가마솥 전통 백암순대","경기","성남 중원구 산성대로350번길 7","순댓국","골프",1,"순댓국","포장도 인기","성남"],
+["유가장","경기","여주","해장국","골프",1,"뚝배기 해장국","여주 골프 약속 때 아침식사 장소로 추천되는 곳","여주"],
+["정원해장국","경기","여주","해장국","골프",1,"해장국","오래 끓인 국물","여주"],
+["민지뼈다귀해장국","경기","여주","해장국·감자탕","골프",1,"족도리탕, 뼈해장국","감자탕에 족발을 넣은 족도리탕","여주"],
+["여명국밥","경기","포천 영중면 금화봉길 651-7","소머리국밥","골프",2,"소머리국밥·솥밥","골프장 옆, 새벽부터 영업","포천"]
+];
+const PRICE = {1:"1단계 · 1만원 이하",2:"2단계 · 1~2만원",3:"3단계 · 2~5만원",4:"4단계 · 5~10만원",5:"5단계 · 10만원 초과"};
+const TAGLABEL = {"미쉐린":"미쉐린 빕구르망 등재","식객":"백반기행 소개","LX":"구 지적공사 사보 수록","노포":"노포","골프":"골프 후 해장"};
+const SRC = {"미쉐린":"미쉐린 가이드 서울·부산 빕구르망","식객":"허영만 백반기행","LX":"구 대한지적공사 사보 「땅 이야기 맛 이야기」(2014년 기사 기준)","노포":"노포 (공개 자료 정리)","골프":"골프장 인근 후기·맛집 목록 정리"};
+const THEMES = {
+  "미쉐린":{n:"미쉐린",d:"미쉐린 가이드 서울·부산 빕구르망(합리적 가격의 좋은 식당) 등재 식당입니다."},
+  "식객":{n:"식객",d:"허영만의 백반기행 등에 소개된 식당입니다. 방영 후 변동이 있을 수 있습니다."},
+  "LX":{n:"지적공사",d:"구 대한지적공사 사보 「땅 이야기 맛 이야기」에 실린 숨은 향토 맛집입니다. 2014년 기준 정보입니다."},
+  "노포":{n:"노포",d:"오랜 세월 한자리를 지켜 온 식당입니다."}
+};
+const ZONES = {"수도권":["서울","경기","인천"],"강원":["강원"],"충청":["대전","충남","충북"],"전라":["전북","전남","광주"],"경상":["부산","대구","경북","경남"],"제주":["제주"]};
+const ALIAS = {"미슐랭":["미쉐린"],"허영만":["식객","백반기행"],"백반기행":["식객","백반기행"],"지적공사":["LX","지적공사"],"순대":["순대","순댓국"],"해장":["해장","순댓국","소머리","국밥"],"골프":["골프"],"골프장":["골프"]};
+const STOP = ["맛집","식당","음식점","추천","근처"];
+const LG_MAP = {"소바":"일식","히츠마부시":"일식","중식":"중식","양식·바비큐":"양식","빵":"카페·디저트"};
+const lg = r => LG_MAP[r[3]] || "한식";
+const key = r => r[0]+"|"+r[2];
+const GMAP = new Map(GOLF.map(r=>[key(r),r]));
+const MERGED = [...ALL.map(r=>GMAP.get(key(r))||r), ...GOLF.filter(g=>!ALL.some(a=>key(a)===key(g)))];
+const tagsOf = r => r[4]?r[4].split(",").filter(Boolean):[];
+const srcText = r => { const t=tagsOf(r); return t.length? t.map(x=>SRC[x]).join(" · ") : "웹 자료 정리 (포털·매거진)"; };
+const score = r => { const t=tagsOf(r); return (t.includes("미쉐린")?4:0)+(t.includes("식객")?3:0)+(t.includes("LX")?2:0)+(t.includes("노포")?1:0); };
+const hayCache = new Map();
+function hay(r){
+  let h=hayCache.get(r); if(h) return h;
+  h=[r[0],r[1],r[2],lg(r),r[3],r[6],r[7],tagsOf(r).map(t=>(TAGLABEL[t]||t)+" "+t+" "+(t==="식객"?"허영만 백반기행":t==="LX"?"지적공사":t==="미쉐린"?"미슐랭":"")).join(" "),r[8]||"",PRICE[r[5]]].join(" ");
+  hayCache.set(r,h); return h;
+}
+const tokens = q => q.trim().split(/\s+/).filter(t=>t&&!STOP.includes(t));
+function tokMatch(r,t){
+  const h=hay(r);
+  if(ZONES[t]) return ZONES[t].includes(r[1]);
+  return (ALIAS[t]||[t]).some(a=>h.includes(a));
+}
+
+const st = {tab:"all", sub:"all", q:"", zone:"전체", lg:"전체", cat:"전체", price:0, tags:[], sort:"추천순", open:false, theme:"미쉐린", gregion:"전체"};
+const mem = (()=>{ let d={};
+  try{ d = JSON.parse(localStorage.getItem("matjip-v2")||localStorage.getItem("matjip-v1")||"{}"); }catch(e){}
+  return d; })();
+function save(){ try{ localStorage.setItem("matjip-v2", JSON.stringify(mem)); }catch(e){} }
+const uniq = a => [...new Set(a)];
+const $ = id => document.getElementById(id);
+const SUB = () => $("sub");
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mapUrl = r => "https://map.naver.com/p/search/"+encodeURIComponent(r[0]+" "+r[2]);
+const navText = r => (r[0]+" "+r[1]+" "+r[2]).replace(/\s+/g," ").trim();
+
+// ---- 복사·카카오톡 ----
+let tt;
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"),2800); }
+function oneText(r){
+  return "🍜 "+r[0]+"\n📍 "+navText(r).replace(r[0]+" ","")+"\n🍽 "+r[6]+" ("+PRICE[r[5]].split(" · ")[1]+")\n🗺 "+mapUrl(r)+"\nℹ️ 출처: "+srcText(r);
+}
+async function sendText(title, text){
+  try{ if(navigator.share){ await navigator.share({title, text}); return; } }catch(e){ if(e&&e.name==="AbortError") return; }
+  try{ await navigator.clipboard.writeText(text); toast("복사했습니다. 카카오톡에 붙여넣으세요"); return; }catch(e){}
+  $("mtext").value=text; $("modal").classList.add("on");
+}
+async function copyOnly(text,msg){
+  try{ await navigator.clipboard.writeText(text); toast(msg); return; }catch(e){}
+  $("mtext").value=text; $("modal").classList.add("on");
+}
+$("mclose").onclick=()=>$("modal").classList.remove("on");
+
+// ---- UI helpers ----
+function chips(el, items, isOn, onSel){
+  el.innerHTML="";
+  items.forEach(v=>{
+    const b=document.createElement("button");
+    b.className="chip"; b.textContent=v.label??v;
+    const val=v.value??v;
+    b.setAttribute("aria-pressed", String(isOn(val)));
+    b.onclick=()=>onSel(val);
+    el.appendChild(b);
+  });
+}
+function rowEl(items,isOn,onSel){ const d=document.createElement("div"); d.className="row"; chips(d,items,isOn,onSel); return d; }
+function lblEl(t){ const d=document.createElement("div"); d.className="lbl"; d.textContent=t; return d; }
+function segEl(items,isOn,onSel,cls){
+  const d=document.createElement("div"); d.className="seg "+(cls||"");
+  items.forEach(([v,l])=>{ const b=document.createElement("button"); b.textContent=l; b.setAttribute("aria-pressed",String(isOn(v))); b.onclick=()=>onSel(v); d.appendChild(b); });
+  return d;
+}
+function panelCount(){ return (st.cat!=="전체"?1:0)+(st.price?1:0)+st.tags.length+(st.sort!=="추천순"?1:0); }
+function resetAll(){ st.q=""; st.zone="전체"; st.lg="전체"; st.cat="전체"; st.price=0; st.tags=[]; st.sort="추천순"; st.gregion="전체"; }
+
+function render(){
+  document.querySelectorAll(".tabbar button").forEach(b=>b.setAttribute("aria-selected", String(b.dataset.t===st.tab)));
+  const stick=$("stick"), view=$("view"); stick.innerHTML=""; view.innerHTML=""; SUB().innerHTML="";
+  listBox=null;
+  if(st.tab==="all") return viewAll(stick,view);
+  if(st.tab==="theme") return viewTheme(stick,view);
+  return viewMine(stick,view);
+}
+
+function searchBox(stick, withFilter){
+  const s=document.createElement("div"); s.className="search";
+  const i=document.createElement("input"); i.type="search"; i.placeholder="예: 서울 한식, 곤지암 해장, 춘천 막국수"; i.value=st.q; i.setAttribute("aria-label","검색");
+  i.oninput=()=>{ st.q=i.value; if(listBox) drawList(); };
+  s.appendChild(i);
+  if(withFilter){
+    const b=document.createElement("button"); b.className="btn"; b.setAttribute("aria-pressed",String(st.open));
+    b.textContent="필터"+(panelCount()?" "+panelCount():"");
+    b.onclick=()=>{st.open=!st.open; render();};
+    s.appendChild(b);
+  }
+  stick.appendChild(s);
+}
+
+let listBox=null, countBox=null, curOpts=null;
+function drawList(){
+  const {pool,pred}=curOpts; const toks=tokens(st.q);
+  let L=pool.filter(r=>pred(r)&&toks.every(t=>tokMatch(r,t)));
+  if(st.sort==="추천순") L=[...L].sort((a,b)=>score(b)-score(a)||a[0].localeCompare(b[0],"ko"));
+  if(st.sort==="내 평점순") L=[...L].sort((a,b)=>((mem[key(b)]||{}).r||0)-((mem[key(a)]||{}).r||0));
+  if(st.sort==="이름순") L=[...L].sort((a,b)=>a[0].localeCompare(b[0],"ko"));
+  if(st.sort==="가격 낮은순") L=[...L].sort((a,b)=>a[5]-b[5]);
+  const parts=[...toks,...curOpts.parts()];
+  countBox.innerHTML="";
+  const sp=document.createElement("span"); sp.textContent=(parts.length?parts.join(" · ")+" — ":"")+L.length+"곳"; countBox.appendChild(sp);
+  if(parts.length){ const b=document.createElement("button"); b.className="link"; b.textContent="초기화"; b.onclick=()=>{resetAll();render();}; countBox.appendChild(b); }
+  listBox.innerHTML="";
+  if(!L.length){ listBox.innerHTML='<div class="empty">조건에 맞는 식당이 없습니다.<br>검색어를 줄이거나 초기화해 보세요.</div>'; return; }
+  L.forEach(r=>listBox.appendChild(card(r)));
+}
+function prepList(view, opts){
+  curOpts=opts; countBox=document.createElement("div"); countBox.className="count";
+  listBox=document.createElement("div"); listBox.className="list";
+  view.appendChild(countBox); view.appendChild(listBox); drawList();
+}
+
+function viewAll(stick,view){
+  const golf = st.sub==="golf";
+  searchBox(stick,!golf);
+  SUB().appendChild(segEl([["all","전체 맛집"],["golf","⛳ 골프장 해장"]], v=>st.sub===v, v=>{st.sub=v; st.open=false; render();}, "two"));
+  if(golf){
+    SUB().appendChild(rowEl(["전체",...uniq(GOLF.map(r=>r[8]))], v=>st.gregion===v, v=>{st.gregion=v;render();}));
+    const d=document.createElement("p"); d.className="desc"; d.textContent="수도권 골프장 방면 해장국·순댓국·소머리국밥집입니다. 영업시간을 확인하세요."; view.appendChild(d);
+    return prepList(view,{pool:GOLF, pred:r=>st.gregion==="전체"||r[8]===st.gregion, parts:()=>st.gregion!=="전체"?[st.gregion]:[]});
+  }
+  SUB().appendChild(rowEl(["전체",...Object.keys(ZONES)].map(z=>({label:z==="전체"?"전국":z,value:z})), v=>st.zone===v, v=>{st.zone=v;render();}));
+  SUB().appendChild(rowEl([{label:"전체 음식",value:"전체"},...uniq(MERGED.map(lg)).map(x=>({label:x,value:x}))], v=>st.lg===v, v=>{st.lg=v;st.cat="전체";render();}));
+  if(st.open){
+    const p=document.createElement("div"); p.className="panel";
+    p.appendChild(lblEl("세부 종류"));
+    p.appendChild(rowEl(["전체",...uniq(MERGED.filter(r=>st.lg==="전체"||lg(r)===st.lg).map(r=>r[3]))], v=>st.cat===v, v=>{st.cat=v;render();}));
+    p.appendChild(lblEl("1인 예상 가격대"));
+    p.appendChild(rowEl([{label:"전체",value:0},...[1,2,3,4].map(x=>({label:PRICE[x],value:x}))], v=>st.price===v, v=>{st.price=v;render();}));
+    p.appendChild(lblEl("출처 테마 (중복 선택)"));
+    p.appendChild(rowEl(Object.keys(THEMES).map(t=>({label:THEMES[t].n,value:t})), v=>st.tags.includes(v), v=>{
+      st.tags = st.tags.includes(v)?st.tags.filter(x=>x!==v):[...st.tags,v]; render(); }));
+    p.appendChild(lblEl("정렬"));
+    p.appendChild(rowEl(["추천순","내 평점순","이름순","가격 낮은순"], v=>st.sort===v, v=>{st.sort=v;render();}));
+    SUB().appendChild(p);
+  }
+  prepList(view,{pool:MERGED,
+    pred:r=>(st.zone==="전체"||ZONES[st.zone].includes(r[1]))&&(st.lg==="전체"||lg(r)===st.lg)&&(st.cat==="전체"||r[3]===st.cat)&&(!st.price||r[5]===st.price)&&(!st.tags.length||st.tags.every(t=>tagsOf(r).includes(t))),
+    parts:()=>[st.zone!=="전체"?st.zone:null,st.lg!=="전체"?st.lg:null,st.cat!=="전체"?st.cat:null,st.price?PRICE[st.price].split(" · ")[0]:null,...st.tags.map(t=>THEMES[t].n)].filter(Boolean)});
+}
+
+function viewTheme(stick,view){
+  searchBox(stick,false);
+  SUB().appendChild(segEl(Object.keys(THEMES).map(t=>[t,THEMES[t].n]), v=>st.theme===v, v=>{st.theme=v; st.zone="전체"; render();}));
+  SUB().appendChild(rowEl(["전체",...Object.keys(ZONES)].map(z=>({label:z==="전체"?"전국":z,value:z})), v=>st.zone===v, v=>{st.zone=v;render();}));
+  const d=document.createElement("p"); d.className="desc"; d.textContent=THEMES[st.theme].d; view.appendChild(d);
+  prepList(view,{pool:MERGED.filter(r=>tagsOf(r).includes(st.theme)), pred:r=>st.zone==="전체"||ZONES[st.zone].includes(r[1]), parts:()=>st.zone!=="전체"?[st.zone]:[]});
+}
+
+
+// ---- Cloudflare 동기화 (찜·다녀옴·별점·댓글) ----
+const API = "https://matjip-finder-api.YOUR-SUBDOMAIN.workers.dev";
+const apiReady = () => !API.includes("YOUR-SUBDOMAIN");
+function mergeMem(a,b){
+  const out={...a};
+  Object.keys(b||{}).forEach(k=>{
+    const x=out[k]||{}, y=b[k]||{};
+    out[k]={f:!!(x.f||y.f), v:!!(x.v||y.v), r:x.r||y.r||0, c:[...new Set([...(x.c||[]),...(y.c||[])])]};
+  });
+  return out;
+}
+async function syncNow(pin){
+  const h={"X-Pin":pin,"Content-Type":"application/json"};
+  const g=await fetch(API+"/sync",{headers:h});
+  if(!g.ok) throw new Error("불러오기 실패 ("+g.status+")");
+  const merged=mergeMem(mem, await g.json());
+  Object.keys(mem).forEach(k=>delete mem[k]); Object.assign(mem,merged); save();
+  const p=await fetch(API+"/sync",{method:"PUT",headers:h,body:JSON.stringify(merged)});
+  if(!p.ok) throw new Error("올리기 실패 ("+p.status+")");
+}
+function syncPanel(view){
+  const box=document.createElement("div"); box.className="card"; box.style.marginTop="12px";
+  let pin=""; try{ pin=localStorage.getItem("matjip-pin")||""; }catch(e){}
+  box.innerHTML='<h3 class="name" style="font-size:19px">☁️ 기기 간 동기화</h3><p class="note">같은 숫자 PIN을 넣으면 폰과 PC의 찜·별점·댓글이 합쳐집니다. PIN은 6자리 이상 숫자를 권장합니다.</p><div class="cm"><input type="text" inputmode="numeric" maxlength="12" placeholder="PIN (숫자 4~12자리)" aria-label="PIN"><button type="button">동기화</button></div>';
+  const inp=box.querySelector("input"); inp.value=pin;
+  box.querySelector("button").onclick=async()=>{
+    const v=inp.value.trim();
+    if(!apiReady()){ toast("Worker 주소(API)를 먼저 설정해야 합니다"); return; }
+    if(!/^\d{4,12}$/.test(v)){ toast("PIN은 숫자 4~12자리입니다"); return; }
+    try{ localStorage.setItem("matjip-pin",v); }catch(e){}
+    try{ toast("동기화 중..."); await syncNow(v); toast("동기화 완료"); render(); }catch(e){ toast(e.message||"동기화 실패"); }
+  };
+  view.appendChild(box);
+}
+
+function viewMine(stick,view){
+  const has = f => MERGED.filter(r=>f(mem[key(r)]||{}));
+  const favs=has(m=>m.f);
+  const bar=document.createElement("div"); bar.className="sendbar";
+  const kb=document.createElement("button"); kb.textContent="💬 찜 목록 카카오톡으로 보내기";
+  kb.onclick=()=>{
+    if(!favs.length){ toast("먼저 찜한 식당이 있어야 합니다"); return; }
+    sendText("내 맛집 찜 목록","⭐ 내 맛집 찜 목록 ("+favs.length+"곳)\n\n"+favs.map((r,i)=>(i+1)+". "+r[0]+" · "+r[1]+" "+r[2]+"\n   "+r[6]+"\n   "+mapUrl(r)).join("\n"));
+  };
+  bar.appendChild(kb); view.appendChild(bar); syncPanel(view);
+  let total=0;
+  [["찜한 곳",m=>m.f],["다녀온 곳",m=>m.v],["평점·댓글을 남긴 곳",m=>(m.r||0)>0||(m.c||[]).length>0]].forEach(([title,f])=>{
+    const L=has(f); total+=L.length; if(!L.length) return;
+    const h=document.createElement("h2"); h.className="sec"; h.textContent=title+" "+L.length; view.appendChild(h);
+    const box=document.createElement("div"); box.className="list"; L.forEach(r=>box.appendChild(card(r))); view.appendChild(box);
+  });
+  if(!total){ const e=document.createElement("div"); e.className="empty"; e.innerHTML="아직 기록이 없습니다.<br>탐색 탭에서 식당의 찜·다녀옴·별점을 눌러 보세요."; view.appendChild(e); }
+}
+
+function card(r){
+  const k=key(r), m=mem[k]||{};
+  const el=document.createElement("article"); el.className="card";
+  const area = r[8]?" · "+esc(r[8])+" 방면":"";
+  el.innerHTML=`
+   <div class="top"><div><h3 class="name">${esc(r[0])}</h3>
+   <div class="meta">${esc(r[1])} ${esc(r[2])} · ${esc(r[3])}${area}</div></div>
+   <div class="tier">${r[5]}단계</div></div>
+   <div class="tags">${tagsOf(r).map(t=>`<span class="tag t-${t}">${TAGLABEL[t]||t}</span>`).join("")}</div>
+   <p class="menu"><b>${esc(r[6])}</b> <span>· ${PRICE[r[5]].split(" · ")[1]}</span></p>
+   ${r[7]?`<p class="note">${esc(r[7])}</p>`:""}
+   <p class="src"><b>출처</b> ${esc(srcText(r))}</p>
+   <div class="go">
+     <a class="n" href="${mapUrl(r)}" target="_blank" rel="noopener">네이버지도</a>
+     <a class="g" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r[0]+" "+r[2])}" target="_blank" rel="noopener">구글지도</a>
+     <button class="t" type="button">네비 주소 복사</button>
+     <button class="k" type="button">카톡 보내기</button>
+   </div>
+   <div class="mine">
+     <div class="acts"><button class="act" data-a="f" aria-pressed="${!!m.f}">찜</button><button class="act" data-a="v" aria-pressed="${!!m.v}">다녀옴</button><span class="stars" role="group" aria-label="내 평점"></span></div>
+     <details><summary>댓글 ${(m.c||[]).length}개</summary>
+       <div class="cm"><input type="text" maxlength="200" placeholder="방문 후기 한 줄" aria-label="댓글"><button type="button">등록</button></div>
+       <ul class="cl"></ul>
+     </details>
+   </div>`;
+  el.querySelector(".t").onclick=()=>copyOnly(navText(r),"복사했습니다. 티맵·카카오내비 검색창에 붙여넣으세요");
+  el.querySelector(".k").onclick=()=>sendText(r[0], oneText(r));
+  el.querySelectorAll(".act").forEach(b=>b.onclick=()=>{
+    const cur=mem[k]||{}; cur[b.dataset.a]=!cur[b.dataset.a]; mem[k]=cur; save(); render(); });
+  const stars=el.querySelector(".stars");
+  for(let i=1;i<=5;i++){
+    const b=document.createElement("button"); b.textContent="★"; b.setAttribute("aria-label",i+"점");
+    if(i<=(m.r||0)) b.classList.add("on");
+    b.onclick=()=>{ const cur=mem[k]||{}; cur.r = cur.r===i?0:i; mem[k]=cur; save(); render(); };
+    stars.appendChild(b);
+  }
+  const ul=el.querySelector(".cl");
+  (m.c||[]).forEach((t,idx)=>{
+    const li=document.createElement("li");
+    li.innerHTML=`<span>${esc(t)}</span><button aria-label="삭제">삭제</button>`;
+    li.querySelector("button").onclick=()=>{ mem[k].c.splice(idx,1); save(); render(); };
+    ul.appendChild(li);
+  });
+  const inp=el.querySelector(".cm input");
+  el.querySelector(".cm button").onclick=()=>{
+    const v=inp.value.trim(); if(!v) return;
+    const cur=mem[k]||{}; cur.c=[...(cur.c||[]),v]; mem[k]=cur; save(); render();
+  };
+  return el;
+}
+
+document.querySelectorAll(".tabbar button").forEach(b=>b.onclick=()=>{
+  st.tab=b.dataset.t; st.q=""; st.open=false; render(); window.scrollTo(0,0);
+});
+render();
+</script>
+</body>
+</html>
