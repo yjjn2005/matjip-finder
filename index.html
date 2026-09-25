@@ -131,7 +131,7 @@ h2.sec{font-size:20px;font-weight:900;margin:18px 2px 0}
 </head>
 <body>
 <div class="wrap">
-  <div class="hero"><h1>전국 맛집 기행</h1><p>미쉐린 · 식객 허영만 · 구 지적공사 · 노포 · 골프장 해장</p></div>
+  <div class="hero"><h1>전국 맛집 기행</h1><p>미쉐린 · 식객 허영만 · 구 지적공사 · 노포 · 골프장 해장</p><p class="updated">최종 업데이트: 2026-09-25</p></div>
   <div class="stick"><div class="tabbar" role="tablist">  <button role="tab" data-t="all"><span class="i">🔍</span>탐색</button>
   <button role="tab" data-t="region"><span class="i">📍</span>지역</button>
   <button role="tab" data-t="theme"><span class="i">🏅</span>테마</button>
@@ -272,8 +272,8 @@ const THEMES = {
   "LX":{n:"지적공사",d:"구 대한지적공사 사보 「땅 이야기 맛 이야기」에 실린 숨은 향토 맛집입니다. 2014년 기준 정보입니다."},
   "노포":{n:"노포",d:"오랜 세월 한자리를 지켜 온 식당입니다."}
 };
-const ZONES = {"수도권":["서울","경기","인천"],"강원":["강원"],"충청":["대전","충남","충북"],"전라":["전북","전남","광주"],"경상":["부산","대구","경북","경남"],"제주":["제주"]};
-const ALIAS = {"미슐랭":["미쉐린"],"허영만":["식객","백반기행"],"백반기행":["식객","백반기행"],"지적공사":["LX","지적공사"],"순대":["순대","순댓국"],"해장":["해장","순댓국","소머리","국밥"],"골프":["골프"],"골프장":["골프"]};
+const ZONES = {"서울":["서울"],"경기":["경기"],"인천":["인천"],"강원":["강원"],"충청":["대전","충남","충북"],"전라":["전북","전남","광주"],"경상":["부산","대구","경북","경남"],"제주":["제주"]};
+const ALIAS = {"미슐랭":["미쉐린"],"허영만":["식객","백반기행"],"백반기행":["식객","백반기행"],"지적공사":["LX","지적공사"],"순대":["순대","순댓국"],"해장":["해장","순댓국","소머리","국밥"],"골프":["골프"],"골프장":["골프"],"수도권":["수도권"]};
 const STOP = ["맛집","식당","음식점","추천","근처"];
 const LG_MAP = {"돈까스":"양식","소바":"일식","히츠마부시":"일식","중식":"중식","양식·바비큐":"양식","빵":"카페·디저트"};
 const lg = r => LG_MAP[r[3]] || "한식";
@@ -292,6 +292,7 @@ function hay(r){
 const tokens = q => q.trim().split(/\s+/).filter(t=>t&&!STOP.includes(t));
 function tokMatch(r,t){
   const h=hay(r);
+  if(t==="수도권") return ["서울","경기","인천"].includes(r[1]);
   if(ZONES[t]) return ZONES[t].includes(r[1]);
   return (ALIAS[t]||[t]).some(a=>h.includes(a));
 }
