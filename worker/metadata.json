@@ -1,0 +1,8 @@
+{
+  "main_module": "worker.js",
+  "compatibility_date": "2026-09-01",
+  "bindings": [
+    {"type":"kv_namespace","name":"MATJIP_SYNC","namespace_id":"13afd1e3b195453eba451bdca5a0476d"},
+    {"type":"plain_text","name":"ALLOW_ORIGIN","text":"*"}
+  ]
+}

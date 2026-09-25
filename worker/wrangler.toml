@@ -7,4 +7,4 @@ ALLOW_ORIGIN = "https://yjjn2005.github.io"
 
 [[kv_namespaces]]
 binding = "MATJIP_SYNC"
-id = "REPLACE_WITH_KV_ID"
+id = "13afd1e3b195453eba451bdca5a0476d"
